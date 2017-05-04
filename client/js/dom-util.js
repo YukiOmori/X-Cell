@@ -19,8 +19,8 @@ const createTH = createEl('TH');
 const createTD = createEl('TD');
 
 module.exports = {
-  createTH: createTR,
+  createTR: createTR,
   createTH: createTH,
-  createTH: createTD,
+  createTD: createTD,
   removeChildren: removeChildren
 };
