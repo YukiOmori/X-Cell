@@ -93,10 +93,38 @@ describe('table-view', ()=> {
       view.init();
 
       let ths = document.querySelectorAll('THEAD TH');
+      console.log(ths)
       expect(ths.length).toBe(numCols);
 
       let labelTexts = Array.from(ths).map(el => el.textContent);
       expect(labelTexts).toEqual(['A', 'B', 'C', 'D', 'E', 'F']);
+    });
+  });
+
+  describe('table footer', () => {
+    it('has valid sum value for each column', () => {
+      //case:
+      //initialize view
+      const model = new TableModel(3, 3);
+      const view = new TableView(model);
+      view.init();
+
+      //simulate input to model
+      model.setValue({ col: 0, row: 0}, '12');
+      model.setValue({ col: 0, row: 1}, 'p');
+      model.setValue({ col: 0, row: 2}, '-158');
+
+      //make sure calcColSum works
+      expect(view.calcColSum(model, 0, 3)).toBe('-146');
+
+      //make sure getSumArr works
+      // expect(view.getSumArr(model, 3)).toEqual(['-146', '', ''])
+
+      //check each cell has appropriate value
+      view.renderTableFooter();
+      const tfs = document.querySelectorAll('TFOOT TR');
+      console.log(tfs);
+      expect(tfs[0].cells[0].textContent).toBe('-146');
     });
   });
 

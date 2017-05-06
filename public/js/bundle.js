@@ -92,8 +92,11 @@ class TableView {
   initDomRerefences() {
     this.headerRowEl = document.querySelector('THEAD TR');
     this.sheetBodyEl = document.querySelector('TBODY');
+    this.footerRowEl = document.querySelector('TFOOT TR');
     this.formulaBarEl = document.querySelector('#formula-bar');
-  }
+  //   console.log(this.headerRowEl);
+  //   console.log(this.footerRowEl);
+   }
 
   initCurrentCell() {
     this.currentCellLocation = { col: 0, row: 0 };
@@ -104,8 +107,6 @@ class TableView {
     return value || '';
   }
 
-
-
   renderFormulaBar() {
     const currentCellValue = this.model.getValue(this.currentCellLocation);
     this.formulaBarEl.value = this.normalizeValueForRendering(currentCellValue);
@@ -115,6 +116,7 @@ class TableView {
   renderTable() {
     this.renderTableHeader();
     this.renderTableBody();
+    this.renderTableFooter();
   }
 
   renderTableHeader() {
@@ -122,6 +124,35 @@ class TableView {
     getLetterRange('A', this.model.numCols)
       .map(colLabel => createTH(colLabel))
       .forEach(th => this.headerRowEl.appendChild(th));
+  }
+
+  calcColSum(model, col, numRows) {
+    let sum = 0;
+    for(let row = 0; row < numRows; row++) {
+      const position = { col: col, row: row};
+      const value = model.getValue(position);
+      if(value && Number(value)) {
+        sum += Number(value);
+      }
+    }
+    return String(sum) || '';
+  }
+
+  getSumArr(model, numCols) {
+    var sumArr = [];
+    for(let col = 0; col < numCols; col++) {
+      sumArr.push(this.calcColSum(model, col, numCols));
+    }
+    return sumArr;
+  }
+
+  renderTableFooter() {
+    if(this.footerRowEl) {
+      removeChildren(this.footerRowEl);
+      this.getSumArr(this.model, this.model.numCols)
+        .map(eachValue => createTD(eachValue))
+        .forEach(td => this.footerRowEl.appendChild(td));
+    }
   }
 
   isCurrentCell(col, row) {

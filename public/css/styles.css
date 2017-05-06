@@ -8,6 +8,10 @@ td {
 	padding: 3px;
 }
 
+tfoot {
+  background-color: greenyellow;
+}
+
 .current-cell {
   background-color: pink;
 }
