@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "mkdir -p public/js; browserify client/js/app.js > public/js/bundle.js",
-    "watch": "watchify client/js/app.js -o client/js/bundle.js",
+    "watch": "watchify client/js/app.js -o public/js/bundle.js",
     "test": "jest"
   },
   "author": "Yuki",

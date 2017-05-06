@@ -6,6 +6,7 @@ const { createTR,
 
 describe('dom-util', () => {
   describe('DOM creation functions', () => {
+    
   	describe('createTR', () => {
   		it('creates valid TR element', () => {
   			const el = createTR();
