@@ -32,7 +32,7 @@ const removeChildren = function(parentEl) {
 const createEl = function(tagName) {
   return function(text) {
     const el = document.createElement(tagName);
-    if (text) {
+    if (text || Number(text) === 0) {
       el.textContent = text;
     }
   	return el;
@@ -92,8 +92,9 @@ class TableView {
   initDomRerefences() {
     this.headerRowEl = document.querySelector('THEAD TR');
     this.sheetBodyEl = document.querySelector('TBODY');
+    this.footerRowEl = document.querySelector('TFOOT');
     this.formulaBarEl = document.querySelector('#formula-bar');
-  }
+   }
 
   initCurrentCell() {
     this.currentCellLocation = { col: 0, row: 0 };
@@ -104,8 +105,6 @@ class TableView {
     return value || '';
   }
 
-
-
   renderFormulaBar() {
     const currentCellValue = this.model.getValue(this.currentCellLocation);
     this.formulaBarEl.value = this.normalizeValueForRendering(currentCellValue);
@@ -115,6 +114,7 @@ class TableView {
   renderTable() {
     this.renderTableHeader();
     this.renderTableBody();
+    this.renderTableFooter();
   }
 
   renderTableHeader() {
@@ -122,6 +122,40 @@ class TableView {
     getLetterRange('A', this.model.numCols)
       .map(colLabel => createTH(colLabel))
       .forEach(th => this.headerRowEl.appendChild(th));
+  }
+
+  calcColSum(model, col, numRows) {
+    let sum = '';
+    for(let row = 0; row < numRows; row++) {
+      const position = { col: col, row: row};
+      const value = model.getValue(position);
+      if(Number(value)) {
+        sum = Number(sum);
+        sum += Number(value);
+      }
+    }
+    return String(sum);
+  }
+
+  getSumArr(model, numCols) {
+    var sumArr = [];
+    for(let col = 0; col < numCols; col++) {
+      sumArr.push(this.calcColSum(model, col, numCols));
+    }
+    return sumArr;
+  }
+
+  renderTableFooter() {
+    const fragment = document.createDocumentFragment();
+    const tr = createTR();
+    for (let col = 0; col < this.model.numCols; col++) {
+      const value = this.calcColSum(this.model, col, this.model.numRows);
+      const td = createTD(value);
+      tr.appendChild(td);
+    }
+    fragment.appendChild(tr);
+    removeChildren(this.footerRowEl);
+    this.footerRowEl.appendChild(fragment);
   }
 
   isCurrentCell(col, row) {
@@ -160,6 +194,7 @@ class TableView {
     const value = this.formulaBarEl.value;
     this.model.setValue(this.currentCellLocation, value);
     this.renderTableBody();
+    this.renderTableFooter();
   }
 
   handleSheetClick(evt) {

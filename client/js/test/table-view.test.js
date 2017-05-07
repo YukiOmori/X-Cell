@@ -100,4 +100,30 @@ describe('table-view', ()=> {
     });
   });
 
+  describe('table footer', () => {
+    it('has valid sum value for each column', () => {
+      //initialize view
+      const model = new TableModel(3, 3);
+      const view = new TableView(model);
+      view.init();
+      
+      let tfs = document.querySelectorAll('TBODY TR');
+      let td = tfs[0].cells[0];
+      expect(td.textContent).toBe('');
+
+       //simulate input to model
+      model.setValue({ col: 0, row: 0}, '5');
+      model.setValue({ col: 0, row: 1}, 'p');
+      model.setValue({ col: 0, row: 2}, '-1');
+
+      //make sure calcColSum works
+      expect(view.calcColSum(model, 0, 3)).toBe('4');
+
+      //check each cell has appropriate value
+      view.renderTableFooter();
+      tfs = document.querySelectorAll('TFOOT TR');
+      expect(tfs[0].cells[0].textContent).toBe('4');
+    });
+  });
+
 });
