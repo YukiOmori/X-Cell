@@ -93,7 +93,6 @@ describe('table-view', ()=> {
       view.init();
 
       let ths = document.querySelectorAll('THEAD TH');
-      console.log(ths)
       expect(ths.length).toBe(numCols);
 
       let labelTexts = Array.from(ths).map(el => el.textContent);
@@ -103,28 +102,27 @@ describe('table-view', ()=> {
 
   describe('table footer', () => {
     it('has valid sum value for each column', () => {
-      //case:
       //initialize view
       const model = new TableModel(3, 3);
       const view = new TableView(model);
       view.init();
+      
+      let tfs = document.querySelectorAll('TBODY TR');
+      let td = tfs[0].cells[0];
+      expect(td.textContent).toBe('');
 
-      //simulate input to model
-      model.setValue({ col: 0, row: 0}, '12');
+       //simulate input to model
+      model.setValue({ col: 0, row: 0}, '5');
       model.setValue({ col: 0, row: 1}, 'p');
-      model.setValue({ col: 0, row: 2}, '-158');
+      model.setValue({ col: 0, row: 2}, '-1');
 
       //make sure calcColSum works
-      expect(view.calcColSum(model, 0, 3)).toBe('-146');
-
-      //make sure getSumArr works
-      // expect(view.getSumArr(model, 3)).toEqual(['-146', '', ''])
+      expect(view.calcColSum(model, 0, 3)).toBe('4');
 
       //check each cell has appropriate value
       view.renderTableFooter();
-      const tfs = document.querySelectorAll('TFOOT TR');
-      console.log(tfs);
-      expect(tfs[0].cells[0].textContent).toBe('-146');
+      tfs = document.querySelectorAll('TFOOT TR');
+      expect(tfs[0].cells[0].textContent).toBe('4');
     });
   });
 

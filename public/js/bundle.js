@@ -32,7 +32,7 @@ const removeChildren = function(parentEl) {
 const createEl = function(tagName) {
   return function(text) {
     const el = document.createElement(tagName);
-    if (text) {
+    if (text || Number(text) === 0) {
       el.textContent = text;
     }
   	return el;
@@ -134,7 +134,7 @@ class TableView {
         sum += Number(value);
       }
     }
-    return sum;
+    return String(sum);
   }
 
   getSumArr(model, numCols) {
@@ -151,14 +151,10 @@ class TableView {
     for (let col = 0; col < this.model.numCols; col++) {
       const value = this.calcColSum(this.model, col, this.model.numRows);
       const td = createTD(value);
-      console.log(value);
       tr.appendChild(td);
     }
     fragment.appendChild(tr);
     removeChildren(this.footerRowEl);
-    // this.getSumArr(this.model, this.model.numCols)
-    //   .map(eachValue => createTD(eachValue))
-    //   .forEach(td => this.footerRowEl.appendChild(td));
     this.footerRowEl.appendChild(fragment);
   }
 
@@ -175,7 +171,6 @@ class TableView {
       for (let col = 0; col < this.model.numCols; col++) {
         const position = {col: col, row: row};
         const value = this.model.getValue(position);
-        console.log(value);
         const td = createTD(value);
 
         if (this.isCurrentCell(col, row)) {
