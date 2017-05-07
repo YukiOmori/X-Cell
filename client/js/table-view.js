@@ -17,10 +17,8 @@ class TableView {
   initDomRerefences() {
     this.headerRowEl = document.querySelector('THEAD TR');
     this.sheetBodyEl = document.querySelector('TBODY');
-    this.footerRowEl = document.querySelector('TFOOT TR');
+    this.footerRowEl = document.querySelector('TFOOT');
     this.formulaBarEl = document.querySelector('#formula-bar');
-  //   console.log(this.headerRowEl);
-  //   console.log(this.footerRowEl);
    }
 
   initCurrentCell() {
@@ -52,15 +50,16 @@ class TableView {
   }
 
   calcColSum(model, col, numRows) {
-    let sum = 0;
+    let sum = '';
     for(let row = 0; row < numRows; row++) {
       const position = { col: col, row: row};
       const value = model.getValue(position);
-      if(value && Number(value)) {
+      if(Number(value)) {
+        sum = Number(sum);
         sum += Number(value);
       }
     }
-    return String(sum) || '';
+    return sum;
   }
 
   getSumArr(model, numCols) {
@@ -72,12 +71,20 @@ class TableView {
   }
 
   renderTableFooter() {
-    if(this.footerRowEl) {
-      removeChildren(this.footerRowEl);
-      this.getSumArr(this.model, this.model.numCols)
-        .map(eachValue => createTD(eachValue))
-        .forEach(td => this.footerRowEl.appendChild(td));
+    const fragment = document.createDocumentFragment();
+    const tr = createTR();
+    for (let col = 0; col < this.model.numCols; col++) {
+      const value = this.calcColSum(this.model, col, this.model.numRows);
+      const td = createTD(value);
+      console.log(value);
+      tr.appendChild(td);
     }
+    fragment.appendChild(tr);
+    removeChildren(this.footerRowEl);
+    // this.getSumArr(this.model, this.model.numCols)
+    //   .map(eachValue => createTD(eachValue))
+    //   .forEach(td => this.footerRowEl.appendChild(td));
+    this.footerRowEl.appendChild(fragment);
   }
 
   isCurrentCell(col, row) {
@@ -93,6 +100,7 @@ class TableView {
       for (let col = 0; col < this.model.numCols; col++) {
         const position = {col: col, row: row};
         const value = this.model.getValue(position);
+        console.log(value);
         const td = createTD(value);
 
         if (this.isCurrentCell(col, row)) {
@@ -116,6 +124,7 @@ class TableView {
     const value = this.formulaBarEl.value;
     this.model.setValue(this.currentCellLocation, value);
     this.renderTableBody();
+    this.renderTableFooter();
   }
 
   handleSheetClick(evt) {
